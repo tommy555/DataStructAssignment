@@ -39,7 +39,7 @@ using namespace std;
 
 
 void main() {
-	test_insert_student();
+	//test_insert_student();
 	menu();
 	cout << "\n\n";
 	system("pause");
@@ -50,20 +50,22 @@ bool ReadFile(char *filename, List *studList)
 	ifstream myfile(filename);
 	string str;
 	string strStud;
-	int count = 1;
+	Student tmpStudent;
+	int count = 1, totalReadedStudent = 0;
 	bool isEqualSymbolFound = false;
 	if (!myfile.is_open()) cout << "Unable to open file";
 
 	//read each line in myfile
 	while (getline(myfile, str)) 
 	{
+		
 		//try to find equal symbol in current readed line, if yes then record down
 		for (int i = 0; i < str.length(); i++) 
 		{
 			if (str[i] == '=')
 			{
 				isEqualSymbolFound = true;
-				str = str.substr(i, str.length());
+				str = str.substr((i+2), str.length());
 			}
 		}
 
@@ -73,18 +75,19 @@ bool ReadFile(char *filename, List *studList)
 			switch (count)
 			{
 			case 1:
-				cout << "Student ID: " << str << endl;
-				
+				strcpy_s(tmpStudent.id, &str[0]);
 				break;
 			case 2:
-				cout << "Name: " << str << endl;
+				strcpy_s(tmpStudent.name, &str[0]);
 				break;
 			case 3:
-				cout << "Course: " << str << endl;
+				strcpy_s(tmpStudent.course, &str[0]);
 				break;
 			case 4:
-				cout << "Phone number: " << str << endl;
+				strcpy_s(tmpStudent.phone_no, &str[0]);
 				count = 0; //reset line count from 4 to 0, line count will be increased to 1 after the switch operation
+				totalReadedStudent++; // increase the total of readed student
+				studList->insert(totalReadedStudent, tmpStudent); // insert readed student into studList
 				break;
 			default:
 				break;
