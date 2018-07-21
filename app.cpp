@@ -7,6 +7,8 @@
 #include	"Student.h"
 #include	"Node.h"
 
+using namespace std;
+
 //menu function
 bool ReadFile(char *, List *);
 bool DeleteRecord(List *, char *);
@@ -19,15 +21,16 @@ int menu();
 
 //utilities
 void printStudentList();
-void test_insert_student();
 void clearCin();
 void printStudDetail(List, ostream &, int, char *);
-bool runIdetifyGoodPoorStud(List);
 string studStrFilter(string);
 
 //run menu function
 void runDel();
 void runDisplay();
+void runFindEligibleStudent();
+bool runIdetifyGoodPoorStud(List);
+double calCGPA(Student *);
 
 List studentList;
 
@@ -39,31 +42,31 @@ using namespace std;
 
 
 void main() {
-	test_insert_student();
 	menu();
 	cout << "\n\n";
 	system("pause");
 }
-
 bool ReadFile(char *filename, List *studList)
 {
 	ifstream myfile(filename);
 	string str;
 	string strStud;
-	int count = 1;
+
+	Student tmpStudent;
+	int count = 1, totalReadedStudent = 0;
 	bool isEqualSymbolFound = false;
 	if (!myfile.is_open()) cout << "Unable to open file";
 
-	//read each line in myfile
-	while (getline(myfile, str)) 
+	while (getline(myfile, str))
 	{
+		isEqualSymbolFound = false;
 		//try to find equal symbol in current readed line, if yes then record down
-		for (int i = 0; i < str.length(); i++) 
+		for (int i = 0; i < str.length(); i++)
 		{
 			if (str[i] == '=')
 			{
 				isEqualSymbolFound = true;
-				str = str.substr(i, str.length());
+				str = str.substr((i + 2), str.length());
 			}
 		}
 
@@ -73,37 +76,38 @@ bool ReadFile(char *filename, List *studList)
 			switch (count)
 			{
 			case 1:
-				cout << "Student ID: " << str << endl;
-				
+				strcpy_s(tmpStudent.id, &str[0]);
 				break;
 			case 2:
-				cout << "Name: " << str << endl;
+				strcpy_s(tmpStudent.name, &str[0]);
 				break;
 			case 3:
-				cout << "Course: " << str << endl;
+				strcpy_s(tmpStudent.course, &str[0]);
 				break;
 			case 4:
-				cout << "Phone number: " << str << endl;
+				strcpy_s(tmpStudent.phone_no, &str[0]);
 				count = 0; //reset line count from 4 to 0, line count will be increased to 1 after the switch operation
+				totalReadedStudent++; // increase the total of readed student
+				studList->insert(totalReadedStudent, tmpStudent); // insert readed student into studList
 				break;
 			default:
 				break;
 			}
 			count++; /*increase line count*/
-			isEqualSymbolFound = false; /*reset value from true to false*/
 		}
 	}
-	myfile.close();
-	cout << "Finish run" << endl;
-	return true;
+
+		
+		return true;
 }
+
 bool DeleteRecord(List *studentList, char *id)
 {
 	int pos;
 	if (studentList->findPosById(id, pos))
 	{
 		
-		if (studentList->remove(pos)) cout << "Student with ID: " << id << " have been removed.\n\n";
+		if (studentList->remove(pos)) cout << "Student with ID: " << id << " have been removed.\n\n\nNew Student List\n==================================================\n";
 		else
 		{
 			cout << "Unable to remove the student with ID: " << id << ".\n\n";
@@ -112,6 +116,7 @@ bool DeleteRecord(List *studentList, char *id)
 	}
 
 	printStudentList();
+	cout << "\n\n\n\n";
 	return true;
 }
 bool Display(List sl, int src)
@@ -136,7 +141,7 @@ bool Display(List sl, int src)
 bool InsertResult(char *fn, List *sl)
 {
 	string line;
-	int lineCount = 1, totalSubTaken, studentPos, exmCount;
+	int lineCount = 1, totalSubTaken = 0, studentPos = 0, exmCount = 0;
 	in.open(fn);
 	Student *curStud = new Student();
 	if (!in)
@@ -165,15 +170,18 @@ bool InsertResult(char *fn, List *sl)
 			for (int i = 0; i < curStud->exam[exmCount].numOfSubjects; i++)
 			{
 				in >> line;
-				strcpy_s(curStud->exam[exmCount].sub[i].subject_code, &line[exmCount]);
+				strcpy_s(curStud->exam[exmCount].sub[i].subject_code, &line[0]);
 				in >> line;
-				strcpy_s(curStud->exam[exmCount].sub[i].subject_name, &line[exmCount]);
+				strcpy_s(curStud->exam[exmCount].sub[i].subject_name, &line[0]);
 				in >> line;
 				curStud->exam[exmCount].sub[i].credit_hours = stoi(line);
 				in >> line;
 				curStud->exam[exmCount].sub[i].marks = stoi(line);
-				if (!curStud->exam[exmCount].calculateGPA()) cout << "Cannot calculate GPA." << endl;
+				
+				//check subject mark, if subject fail don't add in total credit hour
+				if (curStud->exam[exmCount].sub[i].marks >= 50) curStud->totalCreditsEarned += curStud->exam[exmCount].sub[i].credit_hours;
 			}
+			curStud->exam[exmCount].calculateGPA();
 			curStud->exam_cnt++;
 			break;
 		default:
@@ -182,7 +190,12 @@ bool InsertResult(char *fn, List *sl)
 		lineCount++;
 		if (lineCount >= 5) lineCount = 1;
 	}
-	in.close();
+	//loop student linked list to cal each student's CGPA
+	for (int i = 1; i <= sl->size(); i++)
+	{
+		curStud = &sl->find(i)->item;
+		curStud->current_cgpa = calCGPA(curStud);
+	}
 	return true;
 }
 bool printStatistic(List list)
@@ -193,12 +206,8 @@ bool printStatistic(List list)
 	int totalCnStud = 0;
 	int totalCtStud = 0;
 	int sub = 0;
-
 	double totalCgpa = 0.0;
 	double totalSub = 0.0;
-
-	double stps = 0.0;
-
 	double ceps = 0.0;
 	Student stud;
 
@@ -210,7 +219,6 @@ bool printStatistic(List list)
 		else if (strcmp(stud.course, "IB") == 0)totalIbStud++;
 		else if (strcmp(stud.course, "CN") == 0)totalCnStud++;
 		else if (strcmp(stud.course, "CT") == 0)totalCtStud++;
-
 	
 		totalCgpa += stud.current_cgpa;
 		for (int a = 0; a < stud.exam_cnt; a++)
@@ -231,14 +239,18 @@ bool printStatistic(List list)
 
 	cout << "Average CGPA: " << (totalCgpa/list.size()) << endl;
 	cout << "Average Subjects Taken Per Semester: " << totalSub << endl;
-	cout << "Average CGPA: " << endl;
-	cout << "Average Subjects Taken Per Semester: " << stps << endl;
 	cout << "Average Credits Earned Per Semester: " << ceps << endl;
 
 	return true;
 }
 
-bool findEligibleFYPStudent(List, List *);
+bool findEligibleFYPStudent(List list1, List *FYPlist)
+{
+	Student student;
+	if (FYPlist->size()>0) Display(*FYPlist, 1);
+	else cout << "There is no student that is eligible to take FYP\n\n\n";
+	return true;
+}
 bool identifyGoodPoorStudent(List list1, List *goodList, List *poorList)
 {
 	if (list1.size() <= 0)
@@ -291,7 +303,8 @@ int menu()
 			break;
 
 		case 3:
-			if (InsertResult("exam.txt", &studentList)) cout << "Reading exam.txt...." << endl;
+			if (!InsertResult("exam.txt", &studentList)) cout << "Fail to read exam.txt...." << endl;
+			else cout << "Reading exam.txt, preparing to load data from exam.txt" << endl;
 			break;
 
 		case 4:
@@ -303,11 +316,11 @@ int menu()
 			break;
 
 		case 6:
-			cout << "Run 6" << endl;
+			runFindEligibleStudent();
 			break;
 
 		case 7:
-			if (!(runIdetifyGoodPoorStud(studentList))) cout << "Fail to identify good and poor student." << endl;
+			runIdetifyGoodPoorStud(studentList);
 			break;
 
 		case 8:
@@ -330,39 +343,19 @@ void printStudentList()
 	//char *nName, char *nId, char *nCourse, char *nPhone, double nGPA, int nCredit
 	Student curStudent;
 	cout 
-		<< setw(12) << left << "Name"
-		<< setw(12) << left << "ID"
-		<< setw(12) << left << "Course"
-		<< setw(12) << left << "Phone "
-		<< setw(12) << left << "GPA"
-		<< setw(12) << "Credit hour"
+		<< setw(20) << left << "Name"
+		<< setw(20) << left << "ID"
+		<< setw(20) << left << "Course"
 		<< endl;
 
 	for (int i = 1; i <= studentList.count; i++)
 	{
 		studentList.get(i, curStudent);
 		cout
-			<< setw(12) << left << curStudent.name
-			<< setw(12) << left << curStudent.id
-			<< setw(12) << left << curStudent.course
-			<< setw(12) << left << curStudent.phone_no
-			<< setw(12) << left << curStudent.current_cgpa
-			<< setw(12) << curStudent.totalCreditsEarned << endl;
+			<< setw(20) << left << curStudent.name
+			<< setw(20) << left << curStudent.id
+			<< setw(20) << left << curStudent.course << endl;
 	}
-}
-
-void test_insert_student()
-{
-	Student stud1("stud1", "1200233", "CN", "0123456781", 3.8, 30);
-	Student stud2("stud2", "1201237", "CN", "0177777771", 2.0, 40);
-	Student stud3("stud3", "1300899", "IA", "0133333331", 2.0, 50);
-	Student stud4("stud4", "1200234", "CS", "0144444441", 4.0, 60);
-
-	studentList.insert(1, stud1);
-	studentList.insert(2, stud2);
-	studentList.insert(3, stud3);
-	studentList.insert(4, stud4);
-
 }
 
 void clearCin()
@@ -444,6 +437,45 @@ string studStrFilter(string str)
 	return str;
 }
 
+void runFindEligibleStudent()
+{
+	List eligibleStudList;
+	Student stud;
+	int eligibleCount = 0;
+	bool isUCCD2502Taken = false, isUCCD2513Taken = false;
+	for (int i = 1; i <= studentList.size(); i++)
+	{
+		isUCCD2502Taken = isUCCD2513Taken = false;
+		studentList.get(i, stud);
+
+		if (stud.totalCreditsEarned >= 30)	// check students earned 30 credit hours
+		{
+			for (int j = 0; j < stud.exam_cnt; j++)	//check students result history
+			{
+				for (int k = 0; k < stud.exam[j].numOfSubjects; k++)	//check students subject taken 
+				{
+					if (strcmp("UCCD2502", stud.exam[j].sub[k].subject_code) == 0)
+					{
+						isUCCD2502Taken = true;
+					}
+
+					if (strcmp("UCCD2513", stud.exam[j].sub[k].subject_code) == 0)
+					{
+						isUCCD2513Taken = true;
+					}
+				}
+			}
+		}
+		if (isUCCD2502Taken == true && isUCCD2513Taken == true)
+		{
+			eligibleStudList.insert(eligibleCount + 1, stud);
+			eligibleCount++;
+		}
+	}
+
+	findEligibleFYPStudent(studentList, &eligibleStudList);
+}
+
 bool runIdetifyGoodPoorStud(List studentList)
 {
 	//define good student list and bad student list
@@ -453,10 +485,10 @@ bool runIdetifyGoodPoorStud(List studentList)
 	int totalGoodStudent = 1, totalBadStudent = 1; /*define 2 var to record total number of good student and bad student*/
 	int totalPassedGpa = 0, totalFailGpa = 0;
 	bool isGpaLower = false, isCgpaLower = false; /*var for detect bad student*/
-	Node *curStudent = studentList.head; /*used to hold the current student when looping the linked list. 
+	Node *curStudent = studentList.head; /*used to hold the current student when looping the linked list.
 										 Given the (studentList.head) value so the linked list have a head to start looping*/
 
-	//this for loop is to detect each student in list
+										 //this for loop is to detect each student in list
 	for (int i = 1; i <= studentList.size(); i++)
 	{
 		//clear var
@@ -471,14 +503,20 @@ bool runIdetifyGoodPoorStud(List studentList)
 			if (curStudent->item.exam[i].gpa >= 3.5) totalPassedGpa++; /*This line will check gpa of each exam to see wheter
 																	   the gpa is equal or more than 3.5, if yes then record down*/
 			if (curStudent->item.exam[i].gpa <= 2.0) totalFailGpa++; /*This line will check gpa of each exam to see wheter
-																	   the gpa is equal or lower than 2.0, if yes then record down*/
+																	 the gpa is equal or lower than 2.0, if yes then record down*/
 			for (int j = 0; j < curStudent->item.exam[i].numOfSubjects; j++) /*This for loop is to detect each subject taken by curStudent in this semester*/
-				if (curStudent->item.exam[i].sub[j].marks < 50) isNoFail = false;/*if loaded subject mark < 50 then this student did fail in subject*/		
+				if (curStudent->item.exam[i].sub[j].marks < 50) isNoFail = false;/*if loaded subject mark < 50 then this student did fail in subject*/
 		}
 
 		//make decision on current student is good student or bad student
 		if (totalPassedGpa >= 3) isGpaOver = true; /*If curStudent have more than 3 exam more than or equal to 3.5*/
 		if (totalFailGpa >= 3) isGpaLower = true; /*If curStudent have more than 3 exam more than or equal to 3.5*/
+
+		cout << "\t\t\tThis student " << curStudent->item.name
+			<< "\n\t\t\t\tisGpaOver: " << isGpaOver
+			<< "\n\t\t\t\tisCgpaOver: " << isCgpaOver
+			<< "\n\t\t\t\tisNoFail" << isNoFail << endl;
+
 		if (isCgpaOver == true && isGpaOver == true && isNoFail == true)
 		{
 			goodStudentList.insert(totalGoodStudent, curStudent->item);
@@ -494,9 +532,20 @@ bool runIdetifyGoodPoorStud(List studentList)
 	}
 
 	if (!(identifyGoodPoorStudent(studentList, &goodStudentList, &badStudentList))) cout << "Fail to run identifyGoodPoorStudent()." << endl;
-	
+
 	return true;
 }
+
+double calCGPA(Student *student)
+{
+	double totalGradePoint = 0, totalCreditHour = student->totalCreditsEarned;
+	for (int i = 0; i < student->exam_cnt; i++)
+	{
+		for (int j = 0; j < student->exam[i].numOfSubjects; j++) totalGradePoint += (student->exam[i].sub[j].getGradePoint() * student->exam[i].sub[j].credit_hours);
+	}
+	return (totalGradePoint/totalCreditHour);
+}
+
 
 
 //test github
