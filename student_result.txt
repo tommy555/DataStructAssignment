@@ -4,9 +4,9 @@
 
 Name: stud1
 Id: 1200233
-Course: CN
+Course: DI
 Phone No: 0123456781
-Current CGPA: 3.8
+Current CGPA: 3
 Total Credits Earned: 30
 ----------------------------PAST EXAM RESULT----------------------------
 
@@ -21,7 +21,7 @@ ________________________________________________________________________________
 UCCD1004	PROGRAMMING_CONCEPTS_AND_DESIGN          4	   B+	3.33000
 UCCD1024	DATA_STRUCTURES                          4	   A	4.00000
 UCCD2502	INTRODUCTION_TO_PROPOSAL_WRITING         3	   A-	3.67000
-GPA: 3.66636
+GPA: 0.00000
 
 
 
@@ -31,19 +31,8 @@ May 2012 Exam Results:
 ___________________________________________________________________________________
 Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
 ___________________________________________________________________________________
-CCD2502	NTRODUCTION_TO_PROPOSAL_WRITING          3	   A+	4.00000
-GPA: 4.00000
-
-
-
-Oct 2012 Exam Results: 
-
-1 subjects taken.
-___________________________________________________________________________________
-Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
-___________________________________________________________________________________
-CD1234	TAS                                      3	   A+	4.00000
-GPA: 4.00000
+CCD2502	NTRODUCTION_TO_PROPOSAL_WRITING          3	   B+	3.33000
+GPA: 0.00000
 
 *******************************STUDENT 2*******************************
 
@@ -51,23 +40,11 @@ GPA: 4.00000
 
 Name: stud2
 Id: 1201237
-Course: CN
+Course: DB
 Phone No: 0177777771
 Current CGPA: 2.00000
 Total Credits Earned: 40
 ----------------------------PAST EXAM RESULT----------------------------
-
-
-
-Jan 2012 Exam Results: 
-
-2 subjects taken.
-___________________________________________________________________________________
-Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
-___________________________________________________________________________________
-UCCD1024	DATA_STRUCTURES                          4	   C	2.00000
-UCCD2502	INTRODUCTION_TO_PROPOSAL_WRITING         3	   C	2.00000
-GPA: 2.00000
 
 
 
@@ -77,21 +54,9 @@ May 2012 Exam Results:
 ___________________________________________________________________________________
 Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
 ___________________________________________________________________________________
-CCD1024	ATA_STRUCTURES                           4	   C	2.00000
-CCD2502	NTRODUCTION_TO_PROPOSAL_WRITING          3	   C	2.00000
-GPA: 2.00000
-
-
-
-Oct 2012 Exam Results: 
-
-2 subjects taken.
-___________________________________________________________________________________
-Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
-___________________________________________________________________________________
-CD1024	TA_STRUCTURES                            4	   C	2.00000
-CD2502	TRODUCTION_TO_PROPOSAL_WRITING           3	   C	2.00000
-GPA: 2.00000
+UCCD1024	DATA_STRUCTURES                          4	   A	4.00000
+UCCD2502	INTRODUCTION_TO_PROPOSAL_WRITING         3	   A-	3.67000
+GPA: 0.00000
 
 *******************************STUDENT 3*******************************
 
@@ -99,9 +64,9 @@ GPA: 2.00000
 
 Name: stud3
 Id: 1300899
-Course: IA
+Course: IT
 Phone No: 0133333331
-Current CGPA: 2.00000
+Current CGPA: 2.50000
 Total Credits Earned: 50
 ----------------------------PAST EXAM RESULT----------------------------
 
@@ -113,33 +78,9 @@ Oct 2012 Exam Results:
 ___________________________________________________________________________________
 Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
 ___________________________________________________________________________________
-UCCD1004	PROGRAMMING_CONCEPTS_AND_DESIGN          4	   C	2.00000
-UCCD1024	DATA_STRUCTURES                          4	   C	2.00000
-GPA: 2.00000
-
-
-
-Oct 2013 Exam Results: 
-
-2 subjects taken.
-___________________________________________________________________________________
-Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
-___________________________________________________________________________________
-CCD1004	ROGRAMMING_CONCEPTS_AND_DESIGN           4	   C	2.00000
-CCD1024	ATA_STRUCTURES                           4	   C	2.00000
-GPA: 2.00000
-
-
-
-Oct 2014 Exam Results: 
-
-2 subjects taken.
-___________________________________________________________________________________
-Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
-___________________________________________________________________________________
-CD1004	OGRAMMING_CONCEPTS_AND_DESIGN            4	   C	2.00000
-CD1024	TA_STRUCTURES                            4	   C	2.00000
-GPA: 2.00000
+UCCD1004	PROGRAMMING_CONCEPTS_AND_DESIGN          4	   B+	3.33000
+UCCD1024	DATA_STRUCTURES                          4	   A	4.00000
+GPA: 0.00000
 
 *******************************STUDENT 4*******************************
 
@@ -147,55 +88,13 @@ GPA: 2.00000
 
 Name: stud4
 Id: 1200234
-Course: CS
+Course: BC
 Phone No: 0144444441
 Current CGPA: 4.00000
 Total Credits Earned: 60
-----------------------------PAST EXAM RESULT----------------------------
 
 
 
-Jan 2013 Exam Results: 
+THIS STUDENT HAVEN'T TAKE ANY EXAM YET
 
-3 subjects taken.
-___________________________________________________________________________________
-Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
-___________________________________________________________________________________
-UCCD1004	PROGRAMMING_CONCEPTS_AND_DESIGN          4	   C	2.00000
-UCCD1024	DATA_STRUCTURES                          4	   C	2.00000
-UCCD2502	INTRODUCTION_TO_PROPOSAL_WRITING         3	   C	2.00000
-GPA: 2.00000
-
-
-
-May 2013 Exam Results: 
-
-1 subjects taken.
-___________________________________________________________________________________
-Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
-___________________________________________________________________________________
-CCD2502	NTRODUCTION_TO_PROPOSAL_WRITING          3	   A+	4.00000
-GPA: 4.00000
-
-
-
-Oct 2013 Exam Results: 
-
-1 subjects taken.
-___________________________________________________________________________________
-Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
-___________________________________________________________________________________
-CD1234	TAS                                      3	   A+	4.00000
-GPA: 4.00000
-
-
-
-Jan 2014 Exam Results: 
-
-1 subjects taken.
-___________________________________________________________________________________
-Subject Code	Subject Name                       Credit Hours	Grade 	Grade Point
-___________________________________________________________________________________
-D1234	AS                                       3	   A+	4.00000
-GPA: 4.00000
 
