@@ -99,10 +99,9 @@ bool ReadFile(char *filename, List *studList)
 		}
 	}
 
-		
+		cout << "Successful to read file. \n\n" ;
 		return true;
 }
-
 bool DeleteRecord(List *studentList, char *id)
 {
 	int pos;
