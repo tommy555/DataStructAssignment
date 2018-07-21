@@ -21,7 +21,6 @@ int menu();
 
 //utilities
 void printStudentList();
-void test_insert_student();
 void clearCin();
 void printStudDetail(List, ostream &, int, char *);
 string studStrFilter(string);
@@ -43,7 +42,6 @@ using namespace std;
 
 
 void main() {
-	//test_insert_student();
 	menu();
 	cout << "\n\n";
 	system("pause");
@@ -172,9 +170,9 @@ bool InsertResult(char *fn, List *sl)
 			for (int i = 0; i < curStud->exam[exmCount].numOfSubjects; i++)
 			{
 				in >> line;
-				strcpy_s(curStud->exam[exmCount].sub[i].subject_code, &line[exmCount]);
+				strcpy_s(curStud->exam[exmCount].sub[i].subject_code, &line[0]);
 				in >> line;
-				strcpy_s(curStud->exam[exmCount].sub[i].subject_name, &line[exmCount]);
+				strcpy_s(curStud->exam[exmCount].sub[i].subject_name, &line[0]);
 				in >> line;
 				curStud->exam[exmCount].sub[i].credit_hours = stoi(line);
 				in >> line;
@@ -248,7 +246,9 @@ bool printStatistic(List list)
 
 bool findEligibleFYPStudent(List list1, List *FYPlist)
 {
-	
+	Student student;
+	if (FYPlist->size()>0) Display(*FYPlist, 1);
+	else cout << "There is no student that is eligible to take FYP\n\n\n";
 	return true;
 }
 bool identifyGoodPoorStudent(List list1, List *goodList, List *poorList)
@@ -358,28 +358,6 @@ void printStudentList()
 	}
 }
 
-void test_insert_student()
-{
-	Student stud1("stud1", "1200233", "DI", "0123456781", 3.0, 30);
-	Student stud2("stud2", "1201237", "DB", "0177777771", 2.0, 40);
-	Student stud3("stud3", "1300899", "IT", "0133333331", 2.5, 50);
-	Student stud4("stud4", "1200234", "BC", "0144444441", 4.0, 60);
-	Student stud5("stud5", "1200234", "CN", "0144444441", 4.0, 60);
-	Student stud6("stud6", "1200234", "CN", "0144444441", 4.0, 60);
-	Student stud7("stud7", "1200234", "CS", "0144444441", 4.0, 60);
-	Student stud8("stud8", "1200234", "IA", "0144444441", 4.0, 60);
-
-	studentList.insert(1, stud1);
-	studentList.insert(2, stud2);
-	studentList.insert(3, stud3);
-	studentList.insert(4, stud4);
-	studentList.insert(5, stud5);
-	studentList.insert(6, stud6);
-	studentList.insert(7, stud7);
-	studentList.insert(8, stud8);
-
-}
-
 void clearCin()
 {
 	cin.clear();
@@ -461,10 +439,13 @@ string studStrFilter(string str)
 
 void runFindEligibleStudent()
 {
+	List eligibleStudList;
 	Student stud;
+	int eligibleCount = 0;
 	bool isUCCD2502Taken = false, isUCCD2513Taken = false;
 	for (int i = 1; i <= studentList.size(); i++)
 	{
+		isUCCD2502Taken = isUCCD2513Taken = false;
 		studentList.get(i, stud);
 
 		if (stud.totalCreditsEarned >= 30)	// check students earned 30 credit hours
@@ -473,7 +454,7 @@ void runFindEligibleStudent()
 			{
 				for (int k = 0; k < stud.exam[j].numOfSubjects; k++)	//check students subject taken 
 				{
-					if (strcmp("UCCCD2502", stud.exam[j].sub[k].subject_code) == 0)
+					if (strcmp("UCCD2502", stud.exam[j].sub[k].subject_code) == 0)
 					{
 						isUCCD2502Taken = true;
 					}
@@ -482,20 +463,17 @@ void runFindEligibleStudent()
 					{
 						isUCCD2513Taken = true;
 					}
-
-					if (isUCCD2502Taken == true && isUCCD2513Taken == true)
-					{
-						cout << "Student Eligible to Take FYP: " << endl;
-						cout << "==============================" << endl;
-						cout << stud.name << endl;
-					}
 				}
 			}
 		}
-		else
-			cout << "There is no student that is eligible to take FYP." << endl;
+		if (isUCCD2502Taken == true && isUCCD2513Taken == true)
+		{
+			eligibleStudList.insert(eligibleCount + 1, stud);
+			eligibleCount++;
+		}
 	}
-	//findEligibleFYPStudent(studentList, );
+
+	findEligibleFYPStudent(studentList, &eligibleStudList);
 }
 
 bool runIdetifyGoodPoorStud(List studentList)
