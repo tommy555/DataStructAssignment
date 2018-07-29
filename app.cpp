@@ -9,6 +9,11 @@
 
 using namespace std;
 
+struct Semester{
+	int year = 0, sem = 0, totalStud = 0;
+	double totalCreditHour = 0, totalSubTaken = 0;
+};
+
 //menu function
 bool ReadFile(char *, List *);
 bool DeleteRecord(List *, char *);
@@ -24,6 +29,7 @@ void printStudentList();
 void clearCin();
 void printStudDetail(List, ostream &, int, char *);
 string studStrFilter(string);
+char *findSemInEng(int);
 
 //run menu function
 void runDel();
@@ -200,12 +206,15 @@ bool InsertResult(char *fn, List *sl)
 }
 bool printStatistic(List list)
 {
+	Semester semesterList[10];
 	int totalCsStud = 0;
 	int totalIaStud = 0;
 	int totalIbStud = 0;
 	int totalCnStud = 0;
 	int totalCtStud = 0;
+	int semListCount = 0;
 	int sub = 0;
+	int totalSem = 0;
 	double totalCgpa = 0.0;
 	double totalSub = 0.0;
 	double ceps = 0.0;
@@ -214,6 +223,8 @@ bool printStatistic(List list)
 	for(int i = 1; i <=list.size(); i++)
 	{
 		list.get(i, stud);
+
+		//cal total student per course
 		if (strcmp(stud.course, "CS") == 0) totalCsStud++;
 		else if (strcmp(stud.course, "IA") == 0)totalIaStud++;
 		else if (strcmp(stud.course, "IB") == 0)totalIbStud++;
@@ -221,11 +232,30 @@ bool printStatistic(List list)
 		else if (strcmp(stud.course, "CT") == 0)totalCtStud++;
 	
 		totalCgpa += stud.current_cgpa;
+		//loop exam
 		for (int a = 0; a < stud.exam_cnt; a++)
 		{
-			cout << "Student " << stud.id << " have a exam at year " << stud.exam[a].year << " semester " << stud.exam[a].trimester << endl;
+			for (int i = 0; i < 10; i++)
+			{
+				if (semesterList[i].sem == stud.exam[a].trimester && semesterList[i].year == stud.exam[a].year)
+				{
+					semListCount = i;
+					break;
+				}
+				else if (semesterList[i].sem == 0 && semesterList[i].year == 0)
+				{
+					semesterList[i].year = stud.exam[a].year;
+					semesterList[i].sem = stud.exam[a].trimester;
+					semListCount = i;
+					totalSem++;
+					break;
+				}
+			}
+			semesterList[semListCount].totalStud ++;
+			semesterList[semListCount].totalSubTaken += stud.exam[a].numOfSubjects;
 			for (int b = 0; b < stud.exam[a].numOfSubjects; b++)
 			{
+				semesterList[semListCount].totalCreditHour += stud.exam[a].sub[b].credit_hours;
 			}
 		}
 	}
@@ -238,8 +268,11 @@ bool printStatistic(List list)
 	cout << "CT Students - " << totalCtStud << endl;
 
 	cout << "Average CGPA: " << (totalCgpa/list.size()) << endl;
-	cout << "Average Subjects Taken Per Semester: " << totalSub << endl;
-	cout << "Average Credits Earned Per Semester: " << ceps << endl;
+	for (int i = 0; i < totalSem; i++)
+	{
+		cout << "\nAverage Subjects Taken in "<< findSemInEng(semesterList[i].sem) << " " << semesterList[i].year <<": " << (semesterList[i].totalSubTaken/semesterList[i].totalStud) << endl;
+		cout << "Average Credits Earned in: " << findSemInEng(semesterList[i].sem) << " " << semesterList[i].year << ": " << (semesterList[i].totalCreditHour / semesterList[i].totalStud) << "\n";
+	}
 
 	return true;
 }
@@ -512,11 +545,6 @@ bool runIdetifyGoodPoorStud(List studentList)
 		if (totalPassedGpa >= 3) isGpaOver = true; /*If curStudent have more than 3 exam more than or equal to 3.5*/
 		if (totalFailGpa >= 3) isGpaLower = true; /*If curStudent have more than 3 exam more than or equal to 3.5*/
 
-		cout << "\t\t\tThis student " << curStudent->item.name
-			<< "\n\t\t\t\tisGpaOver: " << isGpaOver
-			<< "\n\t\t\t\tisCgpaOver: " << isCgpaOver
-			<< "\n\t\t\t\tisNoFail" << isNoFail << endl;
-
 		if (isCgpaOver == true && isGpaOver == true && isNoFail == true)
 		{
 			goodStudentList.insert(totalGoodStudent, curStudent->item);
@@ -546,6 +574,26 @@ double calCGPA(Student *student)
 	return (totalGradePoint/totalCreditHour);
 }
 
+char *findSemInEng(int trimester)
+{
+	switch (trimester)
+	{
+	case 1:
+		return "Jan";
+		break;
+
+	case 5:
+		return "May";
+		break;
+
+	case 10:
+		return "Oct";
+		break;
+
+	default:
+		return " ";
+	}
+}
 
 
 //test github
